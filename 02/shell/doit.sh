@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-input_file="${1:-../input}"
+prog_path=$(readlink -f "$0")
+prog_dir=$(dirname "$prog_path")
+parent_dir=$(dirname "$prog_dir")
+
+input_file="${1:-$parent_dir/input}"
 
 if [[ ! -f $input_file ]]; then
 	echo "Error: input file '$input_file' not found"
