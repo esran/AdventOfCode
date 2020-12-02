@@ -26,22 +26,16 @@ public class Day02 {
 	}
 
 	private List<PasswordLine> passwords_;
-	private final StopWatch stopWatch_ = new StopWatch();
 	private final List<String> checkPoints_ = new ArrayList<>();
 
 	private Day02() {
-		stopWatch_.start();
-		stopWatch_.suspend();
 		Load();
 	}
 
 	private void PrintTimes() {
-		stopWatch_.resume();
-		stopWatch_.stop();
 		for (String t : checkPoints_) {
 			System.out.println(t);
 		}
-		System.out.println("TOTAL: " + stopWatch_.toString());
 	}
 
 	private Boolean IsValidPart1(PasswordLine input) {
@@ -57,40 +51,30 @@ public class Day02 {
 	}
 
 	private void Load() {
+		var stopwatch = new StopWatch();
+		stopwatch.start();
 		try {
-			stopWatch_.resume();
-			stopWatch_.split();
 			ClassLoader classLoader = getClass().getClassLoader();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(Path))));
 			passwords_ = reader.lines().map(PasswordLine::new).collect(Collectors.toList());
 		} finally {
-			checkPoints_.add(" LOAD: " + stopWatch_.toSplitString());
-			stopWatch_.unsplit();
-			stopWatch_.suspend();
+			checkPoints_.add(" LOAD: " + stopwatch.toString());
 		}
 	}
 
 	private long Part1() {
-		try {
-			stopWatch_.resume();
-			stopWatch_.split();
-			return passwords_.stream().filter(this::IsValidPart1).count();
-		} finally {
-			checkPoints_.add("PART1: " + stopWatch_.toSplitString());
-			stopWatch_.unsplit();
-			stopWatch_.suspend();
-		}
+		var stopwatch = new StopWatch();
+		stopwatch.start();
+		var result = passwords_.stream().filter(this::IsValidPart1).count();
+		checkPoints_.add("PART2: " + stopwatch.toString());
+		return result;
 	}
 
 	private long Part2() {
-		try {
-			stopWatch_.resume();
-			stopWatch_.split();
-			return passwords_.stream().filter(this::IsValidPart2).count();
-		} finally {
-			checkPoints_.add("PART2: " + stopWatch_.toSplitString());
-			stopWatch_.unsplit();
-			stopWatch_.suspend();
-		}
+		var stopwatch = new StopWatch();
+		stopwatch.start();
+		var result = passwords_.stream().filter(this::IsValidPart2).count();
+		checkPoints_.add("PART2: " + stopwatch.toString());
+		return result;
 	}
 }
