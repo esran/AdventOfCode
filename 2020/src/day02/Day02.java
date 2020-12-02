@@ -1,4 +1,4 @@
-package day01;
+package day02;
 
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -10,14 +10,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 // Add comment here
-public class Main {
-	private static final String Path = "day01-input.txt";
+public class Day02 {
+	private static final String Path = "day02-input.txt";
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 
-		Main me = new Main();
-		int part1 = me.Part1();
-		int part2 = me.Part2();
+		var me = new Day02();
+		var part1 = me.Part1();
+		var part2 = me.Part2();
 
 		System.out.println("Part1: " + part1);
 		System.out.println("Part2: " + part2);
@@ -25,11 +25,11 @@ public class Main {
 		me.PrintTimes();
 	}
 
-	private List<Integer> numbers_;
+	private List<PasswordLine> passwords_;
 	private final StopWatch stopWatch_ = new StopWatch();
 	private final List<String> checkPoints_ = new ArrayList<>();
 
-	private Main() {
+	private Day02() {
 		stopWatch_.start();
 		stopWatch_.suspend();
 		Load();
@@ -44,13 +44,25 @@ public class Main {
 		System.out.println("TOTAL: " + stopWatch_.toString());
 	}
 
+	private Boolean IsValidPart1(PasswordLine input) {
+		long count = input.password.chars().filter(c -> c == input.letter).count();
+		return (input.min <= count && input.max >= count);
+	}
+
+	private Boolean IsValidPart2(PasswordLine input) {
+		if (input.password.length() < Integer.max(input.min, input.max)) {
+			return false;
+		}
+		return input.password.charAt(input.min-1) == input.letter ^ input.password.charAt(input.max-1) == input.letter;
+	}
+
 	private void Load() {
 		try {
 			stopWatch_.resume();
 			stopWatch_.split();
 			ClassLoader classLoader = getClass().getClassLoader();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(Path))));
-			numbers_ = reader.lines().map(Integer::valueOf).collect(Collectors.toList());
+			passwords_ = reader.lines().map(PasswordLine::new).collect(Collectors.toList());
 		} finally {
 			checkPoints_.add(" LOAD: " + stopWatch_.toSplitString());
 			stopWatch_.unsplit();
@@ -58,45 +70,27 @@ public class Main {
 		}
 	}
 
-	private int Part1 () {
+	private long Part1() {
 		try {
 			stopWatch_.resume();
 			stopWatch_.split();
-			for (int i = 0; i < numbers_.size(); ++i) {
-				for (int j = 1; j < numbers_.size(); ++j) {
-					if (numbers_.get(i) + numbers_.get(j) == 2020) {
-						return numbers_.get(i) * numbers_.get(j);
-					}
-				}
-			}
+			return passwords_.stream().filter(this::IsValidPart1).count();
 		} finally {
 			checkPoints_.add("PART1: " + stopWatch_.toSplitString());
 			stopWatch_.unsplit();
 			stopWatch_.suspend();
 		}
-
-		return -1;
 	}
 
-	private int Part2 () {
+	private long Part2() {
 		try {
 			stopWatch_.resume();
 			stopWatch_.split();
-			for (int i = 0; i < numbers_.size(); ++i) {
-				for (int j = 1; j < numbers_.size(); ++j) {
-					for (int k = 1; k < numbers_.size(); ++k) {
-						if (numbers_.get(i) + numbers_.get(j) + numbers_.get(k) == 2020) {
-							return numbers_.get(i) * numbers_.get(j) * numbers_.get(k);
-						}
-					}
-				}
-			}
+			return passwords_.stream().filter(this::IsValidPart2).count();
 		} finally {
 			checkPoints_.add("PART2: " + stopWatch_.toSplitString());
 			stopWatch_.unsplit();
 			stopWatch_.suspend();
 		}
-
-		return -1;
 	}
 }
