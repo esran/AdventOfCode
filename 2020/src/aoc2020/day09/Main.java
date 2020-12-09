@@ -1,7 +1,9 @@
 package aoc2020.day09;
 
 import aoc2020.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ public class Main {
 		var me = new Main();
 
 		System.out.println("Part1: " + me.Part1());
-//		System.out.println("Part2: " + me.Part2());
+		System.out.println("Part2: " + me.Part2());
 	}
 
 	private static final int Preamble = 25;
@@ -46,7 +48,10 @@ public class Main {
 		throw new RuntimeException("failed part1");
 	}
 
-	boolean IsSumOfTwo(List<Long> check_numbers, Long number) {
+	/*
+	Check whether the number is the sum of any two numbers in the check list
+	 */
+	boolean IsSumOfTwo(@NotNull List<Long> check_numbers, Long number) {
 		for (int pos1 = 0; pos1 < check_numbers.size(); ++pos1) {
 			for (int pos2 = pos1 + 1; pos2 < check_numbers.size(); ++pos2) {
 				if (number.compareTo(check_numbers.get(pos1) + check_numbers.get(pos2)) == 0) {
@@ -56,5 +61,31 @@ public class Main {
 		}
 
 		return false;
+	}
+
+	/*
+	Find a contiguous sequence that adds up to the magic number, and add the
+	smallest and largest of these.
+	 */
+	Long Part2() {
+		Long magic_number = Part1();
+
+		for (int pos1 = 0 ; pos1 < numbers_.size() ; ++pos1) {
+			List<Long> sequence = new ArrayList<>();
+			Long sum = numbers_.get(pos1);
+			sequence.add(numbers_.get(pos1));
+			for (int pos2 = pos1 + 1 ; pos2 < numbers_.size() ; ++pos2) {
+				sequence.add(numbers_.get(pos2));
+				sum += numbers_.get(pos2);
+				if (magic_number.compareTo(sum) == 0) {
+					var max = sequence.stream().max(Long::compareTo);
+					var min = sequence.stream().min(Long::compareTo);
+					assert max.isPresent();
+					return max.get() + min.get();
+				}
+			}
+		}
+
+		throw new RuntimeException("failed part2");
 	}
 }
