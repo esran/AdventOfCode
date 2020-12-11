@@ -3,7 +3,6 @@ package aoc2020.day09;
 import aoc2020.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
