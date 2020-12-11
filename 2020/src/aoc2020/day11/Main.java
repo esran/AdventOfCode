@@ -1,12 +1,14 @@
 package aoc2020.day11;
 
 import aoc2020.utils.Utils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class Main {
 	private static final String Path = MethodHandles.lookup().lookupClass().getPackageName() + "-input.txt";
@@ -22,16 +24,7 @@ public class Main {
 	List<String> data_;
 
 	Main() {
-		data_ = Utils.loadFileAsLines(Path);
-	}
 
-	Long Part1() {
-		while (mutate()) {
-			System.out.print('.');
-		}
-		System.out.println();
-
-		return countOccupied();
 	}
 
 	Long countOccupied() {
@@ -40,8 +33,8 @@ public class Main {
 		return result.get();
 	}
 
-	Boolean mutate() {
-		Map<Integer, String> mutate = getMutation(data_);
+	Boolean mutate(Function<Pair<Integer, Integer>, Adjacency> countAdjacent) {
+		Map<Integer, String> mutate = getMutation(data_, countAdjacent);
 
 		if (mutate.size() == 0) {
 			return false;
@@ -54,7 +47,13 @@ public class Main {
 		return true;
 	}
 
-	Map<Integer, String> getMutation(List<String> data) {
+	enum Adjacency {
+		ZERO,
+		SOME,
+		MANY
+	}
+
+	Map<Integer, String> getMutation(List<String> data, Function<Pair<Integer, Integer>, Adjacency> countAdjacent) {
 		Map<Integer, String> result = new HashMap<>();
 
 		for (var line = 0; line < data.size(); line++) {
@@ -65,12 +64,13 @@ public class Main {
 					continue;
 				}
 
-				var adjacent = countAdjacent(line, chair);
-				if (!checkOccupied(line, chair) && adjacent == 0) {
+				var adjacent = countAdjacent.apply(new ImmutablePair<>(line, chair));
+
+				if (!checkOccupied(line, chair) && adjacent == Adjacency.ZERO) {
 					new_line[chair] = '#';
 					changed = true;
 				}
-				if (checkOccupied(line, chair) && adjacent >= 4) {
+				if (checkOccupied(line, chair) && adjacent == Adjacency.MANY) {
 					new_line[chair] = 'L';
 					changed = true;
 				}
@@ -88,7 +88,10 @@ public class Main {
 		return data_.get(line).charAt(chair) != '.';
 	}
 
-	Integer countAdjacent(Integer line, Integer chair) {
+	Adjacency countAdjacentPart1(Pair<Integer, Integer> pair) {
+		var line = pair.getLeft();
+		var chair = pair.getRight();
+
 		var result = 0;
 		for (var adj_line = -1; adj_line < 2; ++adj_line) {
 			for (var adj_chair = -1; adj_chair < 2; ++adj_chair) {
@@ -101,7 +104,46 @@ public class Main {
 			}
 		}
 
-		return result;
+		if (result == 0) {
+			return Adjacency.ZERO;
+		}
+
+		return result >= 4 ? Adjacency.MANY : Adjacency.SOME;
+	}
+
+	Adjacency countAdjacentPart2(Pair<Integer, Integer> pair) {
+		var line = pair.getLeft();
+		var chair = pair.getRight();
+
+		var adjacent = 0;
+		for (var line_adjust = -1 ; line_adjust < 2 ; ++line_adjust) {
+			for (var chair_adjust = -1 ; chair_adjust < 2 ; ++chair_adjust) {
+				if (line_adjust == 0 && chair_adjust == 0) {
+					continue;
+				}
+
+				var check_line = line + line_adjust;
+				var check_chair = chair + chair_adjust;
+
+				while (check_line >= 0 && check_line < data_.size()
+					&& check_chair >= 0 && check_chair < data_.get(0).length()) {
+					if (isChair(check_line, check_chair)) {
+						if (checkOccupied(check_line, check_chair)) {
+							adjacent++;
+						}
+						break;
+					}
+					check_line += line_adjust;
+					check_chair += chair_adjust;
+				}
+			}
+		}
+
+		if (adjacent == 0) {
+			return Adjacency.ZERO;
+		}
+
+		return adjacent >= 5 ? Adjacency.MANY : Adjacency.SOME;
 	}
 
 	Boolean checkOccupied(Integer line, Integer chair) {
@@ -116,8 +158,24 @@ public class Main {
 		return (data_.get(line).charAt(chair) == '#');
 	}
 
-	Integer Part2() {
-		return -1;
+	Long Part1() {
+		data_ = Utils.loadFileAsLines(Path);
+		while (mutate(this::countAdjacentPart1)) {
+			System.out.print('.');
+		}
+		System.out.println();
+
+		return countOccupied();
+	}
+
+	Long Part2() {
+		data_ = Utils.loadFileAsLines(Path);
+		while (mutate(this::countAdjacentPart2)) {
+			System.out.print('.');
+		}
+		System.out.println();
+
+		return countOccupied();
 	}
 
 }
