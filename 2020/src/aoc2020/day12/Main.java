@@ -54,6 +54,24 @@ public class Main {
 				default -> throw new RuntimeException("invalid direction: " + direction);
 			}
 		}
+
+		void Adjust(int east, int north) {
+			this.east += east;
+			this.north += north;
+		}
+
+		void Rotate(char direction, int amount) {
+			for (; amount > 0; amount -= 90) {
+				int old_east = this.east;
+				if (direction == 'R') {
+					this.east = this.north;
+					this.north = -old_east;
+				} else {
+					this.east = -this.north;
+					this.north = old_east;
+				}
+			}
+		}
 	}
 
 	List<Move> Moves;
@@ -116,8 +134,29 @@ public class Main {
 		throw new RuntimeException("invalid direction: " + direction);
 	}
 
-	Long Part2() {
-		return -1L;
+	/*
+	This time, move a waypoint around the ship and move the ship repeatedly based
+	on the waypoints position relative to the ship.
+	 */
+	int Part2() {
+		Position waypoint = new Position();
+		waypoint.east = 10;
+		waypoint.north = 1;
+		Position position = new Position();
+
+		for (var move : Moves) {
+			switch (move.direction) {
+				case 'N', 'S', 'E', 'W' -> waypoint.Move(move.direction, move.amount);
+				case 'F' -> {
+					for (var i = 0; i < move.amount; ++i) {
+						position.Adjust(waypoint.east, waypoint.north);
+					}
+				}
+				case 'R', 'L' -> waypoint.Rotate(move.direction, move.amount);
+			}
+		}
+
+		return abs(position.east) + abs(position.north);
 	}
 
 }
