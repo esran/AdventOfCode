@@ -1,6 +1,4 @@
-package day06;
-
-import day04.Passport;
+package aoc2020.day06;
 
 import java.util.ArrayList;
 import java.util.List;

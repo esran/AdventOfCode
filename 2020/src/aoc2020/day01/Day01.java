@@ -1,4 +1,4 @@
-package day01;
+package aoc2020.day01;
 
 import org.apache.commons.lang3.time.StopWatch;
 

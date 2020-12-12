@@ -1,4 +1,4 @@
-package day02;
+package aoc2020.day02;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

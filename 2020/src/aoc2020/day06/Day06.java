@@ -1,4 +1,4 @@
-package day06;
+package aoc2020.day06;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

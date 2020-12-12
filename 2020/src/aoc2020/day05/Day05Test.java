@@ -1,4 +1,4 @@
-package day05;
+package aoc2020.day05;
 
 import static org.junit.jupiter.api.Assertions.*;
 
