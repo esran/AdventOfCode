@@ -1,0 +1,10 @@
+[package]
+name = "aoc2023"
+version = "0.1.0"
+authors = ["Sean Johnston <shamu@conical-effort,net>"]
+edition = "2021"
+
+[dependencies]
+argh = { version = "0.1.12" }
+log = "0.4.20"
+simple_logger = "4.3.0"
